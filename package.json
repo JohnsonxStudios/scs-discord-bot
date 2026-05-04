@@ -1,0 +1,24 @@
+{
+  "name": "scs-discord-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Unified Discord bot for the SCS Hockey League website. Replaces ticketing, leveling, polls, embeds, pickems, casino, moderation, and counters with one tightly-integrated bot.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "deploy": "tsx src/deploy.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
