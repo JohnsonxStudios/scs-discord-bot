@@ -16,6 +16,7 @@ flavibot, ticketking, dyno, pickem, casino, etc.
 | the casino            | `/coinflip`, `/slots`, `/blackjack` (uses your existing `tokens` table) |
 | dyno (mod basics)     | `/warn`, `/timeout`, `/kick`, `/ban`, `/case` |
 | polls                 | `/poll` |
+| craig (voice + transcript) | `/record start`, `/record stop` (auto-transcribes via OpenAI Whisper) |
 
 Everything is wired into the same Supabase the website uses, so picks, tokens,
 profile lookups, and moderation history live alongside player records — no
@@ -40,6 +41,16 @@ This bot is meant to run as a **long-running process** (NOT serverless). Pick on
 
 It cannot run on Vercel (Vercel functions are short-lived; bots need a
 persistent gateway connection).
+
+**Voice commands** (`/record`) require native build tools and the system
+package `libsodium` plus Opus headers. On Debian/Ubuntu containers:
+
+```bash
+apt-get install -y build-essential python3 libtool autoconf automake \
+  libsodium-dev libopus-dev pkg-config
+```
+
+You also need `OPENAI_API_KEY` for transcription.
 
 ## Splitting into its own repo
 
