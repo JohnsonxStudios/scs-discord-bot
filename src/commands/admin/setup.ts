@@ -27,7 +27,25 @@ export default {
     .addSubcommand((s) => s.setName("level-reward")
       .setDescription("Grant role at level")
       .addIntegerOption((o) => o.setName("level").setRequired(true).setMinValue(1))
-      .addRoleOption((o) => o.setName("role").setRequired(true))),
+      .addRoleOption((o) => o.setName("role").setRequired(true)))
+    .addSubcommand((s) => s.setName("announce")
+      .setDescription("Bind a channel for an auto-announcement topic")
+      .addStringOption((o) => o.setName("topic").setRequired(true).addChoices(
+        { name: "New scheduled matches", value: "matches" },
+        { name: "Match results",         value: "results" },
+        { name: "News stories",          value: "news" },
+        { name: "Daily recaps",          value: "recaps" },
+        { name: "Trades / waivers / FA", value: "trades" },
+        { name: "Highlight clips",       value: "highlights" },
+        { name: "Application reviews",   value: "applications" },
+      ))
+      .addChannelOption((o) => o.setName("channel").addChannelTypes(ChannelType.GuildText).setRequired(true)))
+    .addSubcommand((s) => s.setName("filter")
+      .setDescription("Set blocked words (comma-separated). Empty to clear.")
+      .addStringOption((o) => o.setName("words").setRequired(true)))
+    .addSubcommand((s) => s.setName("notifications-dm")
+      .setDescription("Toggle DM bridge for SCS notifications")
+      .addBooleanOption((o) => o.setName("enabled").setRequired(true))),
   async execute(i) {
     if (!i.guild) return
     const sub = i.options.getSubcommand()
@@ -57,6 +75,28 @@ export default {
       await db.from("discord_level_rewards").upsert({ guild_id: i.guild.id, level, role_id: role.id } as never, { onConflict: "guild_id,level" })
       await i.reply({ embeds: [successEmbed(`At level **${level}**, members get <@&${role.id}>.`)] })
       return
+    } else if (sub === "announce") {
+      const topic = i.options.getString("topic", true)
+      const ch = i.options.getChannel("channel", true)
+      const colMap: Record<string, string> = {
+        matches: "announce_matches_channel_id",
+        results: "announce_results_channel_id",
+        news:    "announce_news_channel_id",
+        recaps:  "announce_recaps_channel_id",
+        trades:  "announce_trades_channel_id",
+        highlights:   "highlights_channel_id",
+        applications: "application_channel_id",
+      }
+      patch[colMap[topic]] = ch.id
+      label = `Announcements bound: ${topic} → <#${ch.id}>`
+    } else if (sub === "filter") {
+      const raw = i.options.getString("words", true)
+      const list = raw.split(",").map((s) => s.trim()).filter(Boolean)
+      patch.word_filter = list
+      label = list.length ? `Filtering ${list.length} word(s).` : "Word filter cleared."
+    } else if (sub === "notifications-dm") {
+      patch.notifications_dm = i.options.getBoolean("enabled", true)
+      label = `Notification DMs ${patch.notifications_dm ? "enabled" : "disabled"}.`
     }
 
     await db.from("discord_settings").upsert(patch as never, { onConflict: "guild_id" })

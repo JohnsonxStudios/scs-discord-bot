@@ -16,6 +16,20 @@ export default {
   name: Events.MessageCreate,
   async execute(_client, message) {
     if (message.author.bot || !message.guild) return
+
+    // ── Word filter ─────────────────────────────────────────────────
+    const settings = await getGuildSettings(message.guild.id)
+    const filter = (settings.word_filter as string[] | null) ?? []
+    if (filter.length) {
+      const lower = message.content.toLowerCase()
+      const hit = filter.find((w) => w && lower.includes(String(w).toLowerCase()))
+      if (hit && !(message.member?.permissions.has("ManageMessages") ?? false)) {
+        await message.delete().catch(() => {})
+        await message.channel.send({ embeds: [scsEmbed("rose", `⚠️ Filtered`, `<@${message.author.id}>, that word is blocked.`)] }).catch(() => {})
+        return
+      }
+    }
+
     if (message.content.startsWith("!") || message.content.startsWith("/")) return
 
     const { data: existing } = await db
