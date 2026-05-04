@@ -7,7 +7,7 @@ const schema = z.object({
   DISCORD_GUILD_ID: z.string().optional(),
   SUPABASE_URL: z.string().url(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(10),
-  WEBSITE_URL: z.string().url().default("https://scs-project-nine.vercel.app"),
+  WEBSITE_URL: z.string().url().default("https://www.scschel.com"),
   // Transcription provider (one of these is enough; tried in order):
   AI_GATEWAY_API_KEY: z.string().optional(),  // Vercel AI Gateway (recommended — uses your existing credits)
   GROQ_API_KEY: z.string().optional(),         // Groq (free tier, very fast Whisper)
