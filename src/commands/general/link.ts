@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, MessageFlags } from "discord.js"
+import { SlashCommandBuilder } from "discord.js"
 import type { SlashCommand } from "../../types.js"
 import { db } from "../../lib/db.js"
 import { env } from "../../lib/env.js"
@@ -10,7 +10,7 @@ export default {
     .setName("link")
     .setDescription("Link this Discord account to your SCS website account."),
   async execute(i) {
-    await i.deferReply({ flags: MessageFlags.Ephemeral })
+    await i.deferReply({ ephemeral: true })
 
     const { data: existing } = await db
       .from("discord_links")

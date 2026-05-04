@@ -1,6 +1,6 @@
 import {
   ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType,
-  PermissionFlagsBits, SlashCommandBuilder, MessageFlags,
+  PermissionFlagsBits, SlashCommandBuilder,
 } from "discord.js"
 import type { SlashCommand, ButtonHandler } from "../../types.js"
 import { db } from "../../lib/db.js"
@@ -36,7 +36,7 @@ export default {
       const roleId = role?.match(/\d+/)?.[0]
       return { label, emoji, roleId }
     }).filter((o) => o.label && o.roleId)
-    if (!opts.length) { await i.reply({ embeds: [errorEmbed("Need at least one valid option.")], flags: MessageFlags.Ephemeral }); return }
+    if (!opts.length) { await i.reply({ embeds: [errorEmbed("Need at least one valid option.")], ephemeral: true }); return }
 
     const ch = await i.guild.channels.fetch(channel.id)
     if (!ch?.isTextBased()) { await i.reply({ embeds: [errorEmbed("Bad channel.")] }); return }
@@ -76,7 +76,7 @@ export default {
         ],
       })
     }
-    await i.reply({ embeds: [successEmbed(`Panel posted in <#${ch.id}>.`)], flags: MessageFlags.Ephemeral })
+    await i.reply({ embeds: [successEmbed(`Panel posted in <#${ch.id}>.`)], ephemeral: true })
   },
 } satisfies SlashCommand
 
@@ -98,10 +98,10 @@ export const button: ButtonHandler = {
 
     if (member.roles.cache.has(roleId)) {
       await member.roles.remove(roleId).catch(() => {})
-      await i.reply({ flags: MessageFlags.Ephemeral, content: `Removed <@&${roleId}>.` })
+      await i.reply({ ephemeral: true, content: `Removed <@&${roleId}>.` })
     } else {
       await member.roles.add(roleId).catch(() => {})
-      await i.reply({ flags: MessageFlags.Ephemeral, content: `Added <@&${roleId}>.` })
+      await i.reply({ ephemeral: true, content: `Added <@&${roleId}>.` })
     }
   },
 }

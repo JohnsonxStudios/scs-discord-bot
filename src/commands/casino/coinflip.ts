@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, MessageFlags } from "discord.js"
+import { SlashCommandBuilder } from "discord.js"
 import type { SlashCommand } from "../../types.js"
 import { findScsUserByDiscord } from "../../lib/db.js"
 import { adjustBalance, logCasino, getBalance } from "../../lib/tokens.js"

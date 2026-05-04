@@ -1,7 +1,7 @@
 import {
   ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType,
   ModalBuilder, PermissionFlagsBits, SlashCommandBuilder,
-  StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, MessageFlags,
+  StringSelectMenuBuilder, TextInputBuilder, TextInputStyle,
 } from "discord.js"
 import type { SlashCommand } from "../../types.js"
 import { db, getGuildSettings } from "../../lib/db.js"
@@ -121,7 +121,7 @@ export const modal: ModalHandler = {
     const category = i.customId.split(":")[2] ?? "support"
     const subject = i.fields.getTextInputValue("subject")
     const details = i.fields.getTextInputValue("details")
-    await i.deferReply({ flags: MessageFlags.Ephemeral })
+    await i.deferReply({ ephemeral: true })
 
     const settings = await getGuildSettings(i.guild.id)
     const parentId = settings.ticket_category_id as string | null
@@ -132,13 +132,13 @@ export const modal: ModalHandler = {
       return
     }
 
-    const thread = await baseChannel.threads.create({
+    const thread = await (baseChannel as any).threads.create({
       name: `ticket-${i.user.username}-${Date.now().toString(36).slice(-4)}`,
       type: ChannelType.PrivateThread,
       autoArchiveDuration: 1440,
       reason: `Ticket from ${i.user.tag}`,
       invitable: false,
-    })
+    } as any)
     await thread.members.add(i.user.id).catch(() => {})
 
     await db.from("discord_tickets").insert({

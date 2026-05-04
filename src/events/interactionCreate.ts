@@ -1,4 +1,4 @@
-import { Events, MessageFlags } from "discord.js"
+import { Events } from "discord.js"
 import type { BotEvent } from "../types.js"
 import { commands, findButton, findModal, findSelect } from "../lib/registry.js"
 import { errorEmbed } from "../lib/embed.js"
@@ -30,10 +30,10 @@ export default {
       }
     } catch (err: any) {
       console.error("interaction error:", err)
-      const payload = { embeds: [errorEmbed(err?.message ?? "Unexpected error.")], flags: MessageFlags.Ephemeral }
+      const payload = { embeds: [errorEmbed(err?.message ?? "Unexpected error.")], ephemeral: true } as const
       if (interaction.isRepliable()) {
-        if (interaction.replied || interaction.deferred) await interaction.followUp(payload).catch(() => {})
-        else await interaction.reply(payload).catch(() => {})
+        if (interaction.replied || interaction.deferred) await interaction.followUp(payload as any).catch(() => {})
+        else await interaction.reply(payload as any).catch(() => {})
       }
     }
   },

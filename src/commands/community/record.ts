@@ -1,5 +1,5 @@
 import {
-  ChannelType, GuildMember, PermissionFlagsBits, SlashCommandBuilder, MessageFlags,
+  ChannelType, GuildMember, PermissionFlagsBits, SlashCommandBuilder,
 } from "discord.js"
 import {
   EndBehaviorType, joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, entersState,
@@ -38,11 +38,11 @@ export default {
       const member = i.member as GuildMember
       const vc = member?.voice?.channel
       if (!vc || vc.type !== ChannelType.GuildVoice) {
-        await i.reply({ embeds: [errorEmbed("Join a voice channel first.")], flags: MessageFlags.Ephemeral })
+        await i.reply({ embeds: [errorEmbed("Join a voice channel first.")], ephemeral: true })
         return
       }
       if (sessions.has(i.guild.id)) {
-        await i.reply({ embeds: [errorEmbed("Already recording in this server. Use `/record stop` first.")], flags: MessageFlags.Ephemeral })
+        await i.reply({ embeds: [errorEmbed("Already recording in this server. Use `/record stop` first.")], ephemeral: true })
         return
       }
 
@@ -69,7 +69,7 @@ export default {
       catch (err) {
         sessions.delete(i.guild.id)
         conn.destroy()
-        await i.reply({ embeds: [errorEmbed("Failed to join voice.")], flags: MessageFlags.Ephemeral })
+        await i.reply({ embeds: [errorEmbed("Failed to join voice.")], ephemeral: true })
         return
       }
 
@@ -98,7 +98,7 @@ export default {
     if (sub === "stop") {
       const session = sessions.get(i.guild.id)
       if (!session) {
-        await i.reply({ embeds: [errorEmbed("No active session in this server.")], flags: MessageFlags.Ephemeral })
+        await i.reply({ embeds: [errorEmbed("No active session in this server.")], ephemeral: true })
         return
       }
       await i.deferReply()

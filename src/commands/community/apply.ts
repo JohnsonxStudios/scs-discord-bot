@@ -1,6 +1,6 @@
 import {
   ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder,
-  SlashCommandBuilder, TextInputBuilder, TextInputStyle, MessageFlags,
+  SlashCommandBuilder, TextInputBuilder, TextInputStyle,
 } from "discord.js"
 import type { SlashCommand, ButtonHandler, ModalHandler } from "../../types.js"
 import { db, getGuildSettings } from "../../lib/db.js"
@@ -82,7 +82,7 @@ export const modal: ModalHandler = {
         }).catch(() => {})
       }
     }
-    await i.reply({ embeds: [successEmbed("Application submitted — staff will review.")], flags: MessageFlags.Ephemeral })
+    await i.reply({ embeds: [successEmbed("Application submitted — staff will review.")], ephemeral: true })
   },
 }
 
@@ -91,7 +91,7 @@ export const button: ButtonHandler = {
   async execute(i) {
     const [, action, appId] = i.customId.split(":")
     if (!i.memberPermissions?.has("ManageGuild")) {
-      await i.reply({ embeds: [errorEmbed("Manage Server permission required.")], flags: MessageFlags.Ephemeral }); return
+      await i.reply({ embeds: [errorEmbed("Manage Server permission required.")], ephemeral: true }); return
     }
     const status = action === "approve" ? "approved" : "denied"
     const { data: app } = await db.from("discord_applications").select("applicant_discord_id,type").eq("id", appId).maybeSingle()

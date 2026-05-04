@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, SlashCommandBuilder, MessageFlags } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 import type { SlashCommand, ButtonHandler } from "../../types.js"
 import { db, getGuildSettings } from "../../lib/db.js"
 import { errorEmbed, scsEmbed, successEmbed } from "../../lib/embed.js"
@@ -56,7 +56,7 @@ export default {
           )],
         })
       }
-      await i.reply({ embeds: [successEmbed(`Poll posted in <#${ch.id}>.`)], flags: MessageFlags.Ephemeral })
+      await i.reply({ embeds: [successEmbed(`Poll posted in <#${ch.id}>.`)], ephemeral: true })
       return
     }
 
@@ -75,7 +75,7 @@ export default {
       await ch.send({
         embeds: [scsEmbed("emerald", "🏆 Clip of the Week", `Winner: **${winner.title}** by ${winner.owner} — ${winner.votes} votes\n${winner.url}`)],
       })
-      await i.reply({ embeds: [successEmbed("Poll closed and winner posted.")], flags: MessageFlags.Ephemeral })
+      await i.reply({ embeds: [successEmbed("Poll closed and winner posted.")], ephemeral: true })
     }
   },
 } satisfies SlashCommand
@@ -88,6 +88,6 @@ export const button: ButtonHandler = {
     await db.from("discord_clip_votes").upsert({
       poll_id: pollId, discord_id: i.user.id, clip_id: clipId,
     } as never, { onConflict: "poll_id,discord_id" })
-    await i.reply({ flags: MessageFlags.Ephemeral, content: "Vote recorded ✓" })
+    await i.reply({ ephemeral: true, content: "Vote recorded ✓" })
   },
 }

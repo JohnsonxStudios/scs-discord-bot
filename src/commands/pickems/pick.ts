@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, MessageFlags } from "discord.js"
+import { SlashCommandBuilder } from "discord.js"
 import type { SlashCommand } from "../../types.js"
 import { db, findScsUserByDiscord } from "../../lib/db.js"
 import { scsEmbed, errorEmbed, successEmbed } from "../../lib/embed.js"
@@ -39,7 +39,7 @@ export default {
     }
 
     if (sub === "set") {
-      await i.deferReply({ flags: MessageFlags.Ephemeral })
+      await i.deferReply({ ephemeral: true })
       const matchId = i.options.getString("match_id", true)
       const side = i.options.getString("team", true)
 
