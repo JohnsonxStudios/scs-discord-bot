@@ -20,7 +20,7 @@ export default {
     .addSubcommand((s) => s.setName("create").setDescription("Post a new panel")
       .addStringOption((o) => o.setName("title").setDescription("Panel title").setRequired(true))
       .addStringOption((o) => o.setName("options").setDescription("label,emoji,@role; …").setRequired(true))
-      .addChannelOption((o) => o.setName("channel").addChannelTypes(ChannelType.GuildText).setRequired(false))
+      .addChannelOption((o) => o.setName("channel").setDescription("Where to post the panel").addChannelTypes(ChannelType.GuildText).setRequired(false))
       .addBooleanOption((o) => o.setName("exclusive").setDescription("Only one role at a time").setRequired(false))
       .addStringOption((o) => o.setName("description").setDescription("Subtitle").setRequired(false))),
   async execute(i) {

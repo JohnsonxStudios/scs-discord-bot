@@ -9,28 +9,28 @@ export default {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addSubcommand((s) => s.setName("welcome")
       .setDescription("Welcome channel + message")
-      .addChannelOption((o) => o.setName("channel").addChannelTypes(ChannelType.GuildText).setRequired(true))
+      .addChannelOption((o) => o.setName("channel").setDescription("Channel for welcome messages").addChannelTypes(ChannelType.GuildText).setRequired(true))
       .addStringOption((o) => o.setName("message").setDescription("Use {user} to mention. Default if blank.").setRequired(false)))
     .addSubcommand((s) => s.setName("logs")
       .setDescription("Mod log channel")
-      .addChannelOption((o) => o.setName("channel").addChannelTypes(ChannelType.GuildText).setRequired(true)))
+      .addChannelOption((o) => o.setName("channel").setDescription("Channel for mod logs").addChannelTypes(ChannelType.GuildText).setRequired(true)))
     .addSubcommand((s) => s.setName("ticket-category")
       .setDescription("Channel where ticket threads are created")
-      .addChannelOption((o) => o.setName("channel").addChannelTypes(ChannelType.GuildText).setRequired(true)))
+      .addChannelOption((o) => o.setName("channel").setDescription("Parent channel for ticket threads").addChannelTypes(ChannelType.GuildText).setRequired(true)))
     .addSubcommand((s) => s.setName("autorole")
       .setDescription("Role given to every new member")
-      .addRoleOption((o) => o.setName("role").setRequired(true)))
+      .addRoleOption((o) => o.setName("role").setDescription("Role auto-applied on join").setRequired(true)))
     .addSubcommand((s) => s.setName("levelup")
       .setDescription("Level-up announcement channel")
-      .addChannelOption((o) => o.setName("channel").addChannelTypes(ChannelType.GuildText).setRequired(true))
+      .addChannelOption((o) => o.setName("channel").setDescription("Channel for level-up posts").addChannelTypes(ChannelType.GuildText).setRequired(true))
       .addStringOption((o) => o.setName("message").setDescription("Use {user} and {level}").setRequired(false)))
     .addSubcommand((s) => s.setName("level-reward")
       .setDescription("Grant role at level")
-      .addIntegerOption((o) => o.setName("level").setRequired(true).setMinValue(1))
-      .addRoleOption((o) => o.setName("role").setRequired(true)))
+      .addIntegerOption((o) => o.setName("level").setDescription("Level threshold").setRequired(true).setMinValue(1))
+      .addRoleOption((o) => o.setName("role").setDescription("Role to grant").setRequired(true)))
     .addSubcommand((s) => s.setName("announce")
       .setDescription("Bind a channel for an auto-announcement topic")
-      .addStringOption((o) => o.setName("topic").setRequired(true).addChoices(
+      .addStringOption((o) => o.setName("topic").setDescription("Which announcements").setRequired(true).addChoices(
         { name: "New scheduled matches", value: "matches" },
         { name: "Match results",         value: "results" },
         { name: "News stories",          value: "news" },
@@ -39,13 +39,13 @@ export default {
         { name: "Highlight clips",       value: "highlights" },
         { name: "Application reviews",   value: "applications" },
       ))
-      .addChannelOption((o) => o.setName("channel").addChannelTypes(ChannelType.GuildText).setRequired(true)))
+      .addChannelOption((o) => o.setName("channel").setDescription("Destination channel").addChannelTypes(ChannelType.GuildText).setRequired(true)))
     .addSubcommand((s) => s.setName("filter")
       .setDescription("Set blocked words (comma-separated). Empty to clear.")
-      .addStringOption((o) => o.setName("words").setRequired(true)))
+      .addStringOption((o) => o.setName("words").setDescription("Comma-separated word list").setRequired(true)))
     .addSubcommand((s) => s.setName("notifications-dm")
       .setDescription("Toggle DM bridge for SCS notifications")
-      .addBooleanOption((o) => o.setName("enabled").setRequired(true))),
+      .addBooleanOption((o) => o.setName("enabled").setDescription("On/off").setRequired(true))),
   async execute(i) {
     if (!i.guild) return
     const sub = i.options.getSubcommand()
