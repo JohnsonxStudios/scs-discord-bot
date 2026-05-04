@@ -5,13 +5,12 @@ import {
   EndBehaviorType, joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, entersState,
 } from "@discordjs/voice"
 import prism from "prism-media"
-import { createWriteStream, createReadStream, mkdtempSync, existsSync, mkdirSync, statSync } from "node:fs"
+import { createWriteStream, mkdtempSync, existsSync, mkdirSync, statSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import OpenAI from "openai"
 import type { SlashCommand } from "../../types.js"
-import { env } from "../../lib/env.js"
 import { errorEmbed, scsEmbed, successEmbed } from "../../lib/embed.js"
+import { transcribeAudio, transcriptionProviderName } from "../../lib/transcribe.js"
 
 type SessionState = {
   guildId: string
@@ -107,14 +106,14 @@ export default {
       conn?.destroy()
       sessions.delete(i.guild.id)
 
-      if (!env.OPENAI_API_KEY) {
-        await i.editReply({ embeds: [errorEmbed("OPENAI_API_KEY not set — recording saved but no transcript.")] })
+      const provider = transcriptionProviderName()
+      if (provider === "none") {
+        await i.editReply({ embeds: [errorEmbed("No transcription provider configured. Set AI_GATEWAY_API_KEY (recommended), GROQ_API_KEY, or OPENAI_API_KEY in the bot env.")] })
         return
       }
-      const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY })
 
       const lines: string[] = []
-      for (const [userId, speaker] of session.speakers.entries()) {
+      for (const [_, speaker] of session.speakers.entries()) {
         if (speaker.bytes < 48000) continue   // < 1s of audio
         try {
           const wavPath = await pcmToWav(speaker.pcmPath)
@@ -123,11 +122,8 @@ export default {
             lines.push(`**${speaker.username}** — clip too long (${sizeMb.toFixed(1)} MB), skipped`)
             continue
           }
-          const tx = await openai.audio.transcriptions.create({
-            file: createReadStream(wavPath) as any,
-            model: "whisper-1",
-          })
-          if (tx.text?.trim()) lines.push(`**${speaker.username}:** ${tx.text.trim()}`)
+          const text = await transcribeAudio(wavPath)
+          if (text) lines.push(`**${speaker.username}:** ${text}`)
         } catch (err: any) {
           lines.push(`**${speaker.username}** — transcription failed: ${err?.message ?? err}`)
         }
@@ -136,7 +132,10 @@ export default {
       const minutes = Math.round((Date.now() - session.startedAt) / 60_000)
       const body = lines.length ? lines.join("\n\n") : "No audible speech captured."
       await i.editReply({
-        embeds: [scsEmbed("aurora", `🎧 Transcript (${minutes}m)`, body.length > 4000 ? body.slice(0, 4000) + "…" : body)],
+        embeds: [
+          scsEmbed("aurora", `🎧 Transcript (${minutes}m)`, body.length > 4000 ? body.slice(0, 4000) + "…" : body)
+            .setFooter({ text: `via ${provider}` }),
+        ],
       })
       return
     }

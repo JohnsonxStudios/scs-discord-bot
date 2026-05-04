@@ -50,7 +50,12 @@ apt-get install -y build-essential python3 libtool autoconf automake \
   libsodium-dev libopus-dev pkg-config
 ```
 
-You also need `OPENAI_API_KEY` for transcription.
+**Transcription** uses whichever provider you configure (in priority order):
+1. `AI_GATEWAY_API_KEY` — Vercel AI Gateway (uses your existing AI credits, no separate billing)
+2. `GROQ_API_KEY` — Groq (free tier with Whisper Large v3, very fast)
+3. `OPENAI_API_KEY` — direct OpenAI
+
+Just set ONE of those.
 
 ## Splitting into its own repo
 

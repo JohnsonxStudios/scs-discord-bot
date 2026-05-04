@@ -8,7 +8,10 @@ const schema = z.object({
   SUPABASE_URL: z.string().url(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(10),
   WEBSITE_URL: z.string().url().default("https://scs-project-nine.vercel.app"),
-  OPENAI_API_KEY: z.string().optional(),
+  // Transcription provider (one of these is enough; tried in order):
+  AI_GATEWAY_API_KEY: z.string().optional(),  // Vercel AI Gateway (recommended — uses your existing credits)
+  GROQ_API_KEY: z.string().optional(),         // Groq (free tier, very fast Whisper)
+  OPENAI_API_KEY: z.string().optional(),       // direct OpenAI fallback
 })
 
 const parsed = schema.safeParse(process.env)
